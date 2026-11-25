@@ -83,7 +83,12 @@ app_license = "mit"
 # ------------
 
 # before_install = "bb_report_manager.install.before_install"
-# after_install = "bb_report_manager.install.after_install"
+after_install = "bb_report_manager.install.after_install"
+
+# The /bb-reports Vue app (frontend/ -> public/reports, www/bb-reports.html)
+website_route_rules = [
+	{"from_route": "/bb-reports/<path:app_path>", "to_route": "bb-reports"},
+]
 
 # Uninstallation
 # ------------

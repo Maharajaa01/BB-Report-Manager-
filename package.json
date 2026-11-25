@@ -1,0 +1,11 @@
+{
+  "private": true,
+  "name": "bb_report_manager",
+  "description": "BB Report Manager - Vue dashboard for the manager charts (frontend lives in ./frontend)",
+  "scripts": {
+    "postinstall": "cd frontend && npm ci --no-audit --no-fund",
+    "dev": "cd frontend && npm run dev",
+    "build": "cd frontend && npm run build",
+    "test": "cd frontend && npm test"
+  }
+}

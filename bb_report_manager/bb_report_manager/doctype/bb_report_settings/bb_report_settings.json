@@ -1,0 +1,77 @@
+{
+ "actions": [],
+ "creation": "2026-11-23 13:00:00.000000",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "tuition_section",
+  "tuition_site_url",
+  "api_key",
+  "api_secret",
+  "column_break_conn",
+  "timeout",
+  "help_html"
+ ],
+ "fields": [
+  {
+   "fieldname": "tuition_section",
+   "fieldtype": "Section Break",
+   "label": "Tuition Site Connection"
+  },
+  {
+   "default": "https://bbacademy.dreamtechsolution.com",
+   "description": "Base URL of the tuition site that holds Student, Fee and Complaint data. Leave empty when the dashboard runs on the tuition site itself.",
+   "fieldname": "tuition_site_url",
+   "fieldtype": "Data",
+   "label": "Tuition Site URL"
+  },
+  {
+   "fieldname": "api_key",
+   "fieldtype": "Data",
+   "label": "API Key"
+  },
+  {
+   "fieldname": "api_secret",
+   "fieldtype": "Password",
+   "label": "API Secret"
+  },
+  {
+   "fieldname": "column_break_conn",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "30",
+   "fieldname": "timeout",
+   "fieldtype": "Int",
+   "label": "Request Timeout (seconds)"
+  },
+  {
+   "fieldname": "help_html",
+   "fieldtype": "HTML",
+   "options": "<p class=\"text-muted\">The API user on the tuition site needs the <b>BB Report Viewer</b> role. Open the dashboard at <a href=\"/bb-reports\">/bb-reports</a>.</p>"
+  }
+ ],
+ "index_web_pages_for_search": 0,
+ "issingle": 1,
+ "links": [],
+ "modified": "2026-11-23 13:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Bb Report Manager",
+ "name": "BB Report Settings",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

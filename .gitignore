@@ -5,3 +5,7 @@
 tags
 node_modules
 __pycache__
+
+# frontend build output (produced by `bench build --app bb_report_manager`)
+bb_report_manager/public/reports/
+bb_report_manager/www/bb-reports.html
