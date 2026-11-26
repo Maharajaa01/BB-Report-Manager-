@@ -52,3 +52,28 @@ describe("ChartSheet", () => {
 		expect(wrapper.emitted("open")).toEqual([[{ kind: "present", row: "6TH|Girls", month: "2026-10" }]])
 	})
 })
+
+describe("ChartSheet for fees pending", () => {
+	const fees = {
+		...data,
+		title: "AFTER 15TH FEES PENDING COUNT - STD & MONTH WISE",
+		columns: [
+			{ key: "2026-08", label: "AUG", month: "August", year: 2026, state: "no_data" as const },
+			{ key: "2026-10", label: "OCT", month: "October", year: 2026, state: "ok" as const },
+		],
+		rows: [{ ...data.rows[0], values: { "2026-08": null, "2026-10": 3 }, total: 3 }],
+		totals: { values: { "2026-08": null, "2026-10": 3 }, total: 3 },
+	}
+	const w = mount(ChartSheet, { props: { report: REPORTS[1], data: fees, kind: "pending" } })
+
+	it("marks months before invoice data as '–', not 0", () => {
+		const cells = w.findAll("tbody td")
+		expect(cells[3].text()).toBe("–")
+		expect(cells[3].classes()).toContain("nodata")
+	})
+
+	it("drills down with the fee kind", async () => {
+		await w.findAll("tbody td")[4].trigger("click")
+		expect(w.emitted("open")![0][0]).toMatchObject({ kind: "pending", month: "2026-10" })
+	})
+})

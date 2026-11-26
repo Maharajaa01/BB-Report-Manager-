@@ -603,3 +603,124 @@ button.bbr-tile:hover { border-color: var(--accent); box-shadow: 0 2px 8px rgba(
 	.bbr-enq-table th, .bbr-enq-table td { height: 24px; }
 	.bbr-bar { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
 }
+
+.bbr-chart td.nodata { color: #b3b7bd; background: repeating-linear-gradient(135deg, #fff, #fff 4px, #f3f4f6 4px, #f3f4f6 8px); }
+.bbr-chart th.nodata-col { opacity: .6; }
+
+/* generic two-series stack (StackedChart): slot 1 below, slot 2 on top */
+.sw.s-1, .tt-key.s-1 { background: var(--series-boys); }
+.sw.s-2, .tt-key.s-2 { background: var(--series-girls); }
+.bbr-svg .s-1 { fill: var(--series-boys); }
+.bbr-svg .s-2 { fill: var(--series-girls); }
+
+.bbr-stack { display: flex; flex-direction: column; gap: 16px; }
+.bbr-stack .bbr-chart-wrap { max-width: 760px; }
+
+/* ============================================================ Target Charts (Asst. Manager, TL) */
+
+.bbr-target-sheet .bbr-sheet-year { color: #2e3192; }
+.bbr-target-sheet .bbr-sheet-title { color: #ed1c5b; font-family: Arial, sans-serif; font-weight: bold; margin-bottom: 8px; }
+.bbr-target-period {
+	display: flex;
+	justify-content: space-between;
+	margin: 0 0 12px;
+	color: #2e3192;
+	font-size: 14px;
+}
+.bbr-target-weeks { display: flex; flex-direction: column; gap: 22px; }
+.bbr-target-heading { margin: 0 0 6px; font-size: 17px; color: #ed1c24; }
+.bbr-target { font-size: 13px; }
+.bbr-target th { background: #003399; color: #fff; font-size: 13px; }
+.bbr-target th.col-std, .bbr-target th.col-sno { color: #fff; }
+.bbr-target tbody td { background: #eaf6f9; }
+.bbr-target .col-std { width: 12%; color: #2e3192; }
+.bbr-target-cell { vertical-align: top; text-align: left !important; font-weight: normal; min-width: 110px; }
+.bbr-target-cell ol { margin: 0; padding: 0; list-style: none; }
+.bbr-target-cell li { display: flex; justify-content: space-between; gap: 6px; line-height: 1.35; }
+.bbr-target-cell li .who { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 14ch; }
+.bbr-target-cell li b { color: #ed1c24; }
+.bbr-target-cell small { display: block; margin-top: 2px; color: var(--muted); font-size: 11px; }
+.bbr-target-cell.zero { color: #b3b7bd; text-align: center !important; vertical-align: middle; }
+.bbr-target-cell.future { background: #f6f6f6 !important; }
+.bbr-target-cell.clickable { cursor: pointer; }
+.bbr-target-cell.clickable:hover { background: #fff6c2 !important; }
+.bbr-target-signs { display: flex; justify-content: space-between; margin-top: 16px; color: #2e3192; font-weight: bold; font-size: 13px; }
+.bbr-target-signs span::after { content: ""; display: inline-block; width: 160px; height: 22px; margin-left: 8px; vertical-align: middle; background: #fff; border: 1px solid #2e3192; }
+
+.bbr-tenplus { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); border: 1.5px solid #2e3192; background: #fff; }
+.bbr-tenplus-col { background: var(--col-bg); border-right: 1.5px solid #2e3192; min-height: 320px; }
+.bbr-tenplus-col:last-child { border-right: 0; }
+.bbr-tenplus-col h3 { margin: 0; padding: 6px 8px; background: #003399; color: #ffeb3b; font-size: 13px; text-align: center; }
+.bbr-tenplus-col table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.bbr-tenplus-col th { font-size: 11px; color: #2e3192; padding: 4px 6px; border-bottom: 1px solid #2e3192; text-align: left; }
+.bbr-tenplus-col td { padding: 4px 6px; border-bottom: 1px solid rgba(46, 49, 146, .2); }
+.bbr-tenplus-col td b { color: #ed1c24; margin-left: 4px; }
+.bbr-tenplus-col a.who { color: var(--ink); text-decoration: none; }
+.bbr-tenplus-col a.who:hover { text-decoration: underline; }
+
+.bbr-rank-dialog { width: min(640px, calc(100vw - 32px)); }
+.bbr-rank-last td { background: #fff5f4; }
+
+@media print {
+	/* two weeks per landscape page, like the paper register */
+	.bbr-target-weeks { gap: 8px; }
+	.bbr-target-weeks .bbr-target-table:nth-child(2n) { break-after: page; }
+	.bbr-target { font-size: 10px; }
+	.bbr-target-cell small { display: none; }
+}
+
+/* ============================================================ detail under every sheet */
+
+.bbr-muted { color: var(--muted); }
+.bbr-bars li.clickable { cursor: pointer; border-radius: 4px; }
+.bbr-bars li.clickable:hover { background: #f2f3fb; }
+.bbr-bar-note { display: block; font-size: 11px; }
+.bbr-bar-note.bad { color: var(--bad); }
+.bbr-bar-note.good { color: var(--good); }
+.bbr-bars li { grid-template-columns: minmax(110px, 180px) 1fr 110px; }
+.bbr-bar-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bbr-inline-bar { width: 30%; min-width: 60px; }
+.bbr-inline-bar .bbr-bar { height: 10px; }
+
+/* ============================================================ Manager Charts 3 - 9 */
+
+.bbr-tile-value.bbr-tile-text { font-size: 20px; }
+.bbr-check.yes { color: var(--good); font-weight: bold; }
+.bbr-check.no { color: var(--bad); font-weight: bold; }
+.bbr-row-alert td { background: #fff5f4; }
+
+/* Empty months stay narrow; months with problems take the room and flow into sub-columns. */
+.bbr-problem-months { display: flex; background: #fff; border: 1.5px solid var(--chart-border); min-width: 900px; }
+.bbr-problem-month { display: flex; flex-direction: column; flex: 0 0 64px; min-width: 0; border-right: 1.5px solid var(--chart-border); min-height: 260px; }
+.bbr-problem-month.has { flex: 1 1 280px; }
+.bbr-problem-month.has ol { column-width: 230px; column-gap: 18px; max-height: 560px; overflow-y: auto; }
+.bbr-problem-month li { break-inside: avoid; }
+.bbr-problem-month:last-child { border-right: 0; }
+.bbr-problem-month.future { background: #f6f6f6; }
+.bbr-problem-month h3 { margin: 0; padding: 6px; text-align: center; font-size: 16px; border-bottom: 1.5px solid var(--chart-border); }
+.bbr-problem-month ol { flex: 1; margin: 0; padding: 6px 6px 6px 24px; font-size: 12px; }
+.bbr-problem-month li { margin-bottom: 8px; }
+.bbr-problem-month li a { color: var(--ink); font-weight: bold; text-decoration: none; }
+.bbr-problem-month li a:hover { text-decoration: underline; }
+.bbr-problem-month li small { display: block; color: var(--muted); }
+.bbr-problem-month li .bbr-problem-state { color: var(--good); }
+.bbr-problem-month li.open .bbr-problem-state { color: var(--bad); font-weight: bold; }
+.bbr-problem-total { border: 0; border-top: 1.5px solid var(--chart-border); background: #fdf2f8; padding: 6px; font-weight: bold; color: var(--chart-total); cursor: pointer; font-size: 12px; }
+.bbr-problem-total:hover { background: #fff6c2; }
+.bbr-problem-total.empty { color: #b3b7bd; background: transparent; text-align: center; cursor: default; }
+
+.bbr-single { font-weight: normal; font-size: 13px; min-width: 760px; }
+.bbr-single th { background: #dcedd9; color: #006a35; }
+.bbr-single td { text-align: left; vertical-align: top; background: #fff; }
+.bbr-single td.col-sno, .bbr-single td.solved { text-align: center; }
+.bbr-single td small { display: block; color: var(--muted); font-size: 11px; }
+.bbr-single td.problem a { color: var(--ink); font-weight: bold; text-decoration: none; }
+.bbr-single td.problem a:hover { text-decoration: underline; }
+.bbr-single tr.open td { background: #fffaf0; }
+.bbr-single tr.overdue td { background: #fff5f4; }
+.bbr-single .nowrap { white-space: nowrap; }
+
+@media print {
+	.bbr-problem-months { min-width: 0; }
+	.bbr-problem-month.has ol { max-height: none; overflow: visible; }
+}

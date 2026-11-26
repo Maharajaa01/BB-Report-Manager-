@@ -44,3 +44,8 @@ export function niceStep(raw: number): number {
 	const f = raw / pow
 	return (f <= 1 ? 1 : f <= 2 ? 2 : f <= 5 ? 5 : 10) * pow
 }
+
+/** 43750 -> "₹43,750" */
+export function rupees(v: number | null | undefined): string {
+	return v === null || v === undefined ? "" : `₹${Math.round(Number(v)).toLocaleString("en-IN")}`
+}

@@ -3,7 +3,7 @@ import { computed, onMounted, ref, watch } from "vue"
 import { useRoute } from "vue-router"
 
 import SideNav from "@/components/SideNav.vue"
-import { DASHBOARDS, type Dashboard, reportsOf, routeName } from "@/lib/reports"
+import { DASHBOARDS, type Dashboard, defaultQuery, reportsOf, routeName } from "@/lib/reports"
 import { loadOptions } from "@/lib/store"
 
 const route = useRoute()
@@ -28,14 +28,14 @@ onMounted(loadOptions)
 				v-for="d in DASHBOARDS"
 				:key="d.key"
 				:class="{ active: d.key === dashboard }"
-				:to="{ name: routeName(d.key), params: { report: reportsOf(d.key)[0].path }, query: route.query }"
+				:to="{ name: routeName(d.key), params: { report: reportsOf(d.key)[0].path }, query: { ...defaultQuery(d.key), ...route.query } }"
 			>
 				{{ d.label }}
 			</RouterLink>
 		</nav>
 		<div class="bbr-user">
 			<template v-if="userName">{{ userName }} · </template>
-			<a href="/app">Desk</a> · <a href="/?cmd=web_logout">Logout</a>
+			<a href="/app/bb-reports" title="BB Reports workspace in Desk">Desk</a> · <a href="/?cmd=web_logout">Logout</a>
 		</div>
 	</header>
 

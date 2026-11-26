@@ -164,7 +164,7 @@ def _get_students(filters, rows):
 			s.rejoined_date, s.discontinue_reason_category, s.discontinued_reason,
 			s.school_name, s.area, s.father_name, s.preferred_mobile_number,
 			s.father_mobile_number, s.mother_mobile_number, s.guardian_mobile_number,
-			s.monthly_fee, s.scholarship_student
+			s.monthly_fee, s.scholarship_student, s.yearly_fees_student, s.academic_year
 		from `tabStudent` s
 		where {" and ".join(conditions)}
 		""",

@@ -3,11 +3,15 @@ import { computed, ref, watchEffect } from "vue"
 import { useRoute } from "vue-router"
 
 import FilterBar from "@/components/FilterBar.vue"
-import { type Dashboard, reportByPath, reportsOf } from "@/lib/reports"
+import { DASHBOARDS, type Dashboard, reportByPath, reportsOf } from "@/lib/reports"
 import { loadOptions, options, useFilters } from "@/lib/store"
 import AdminView from "@/views/AdminView.vue"
 import ComingSoon from "@/views/ComingSoon.vue"
+import FeesPendingView from "@/views/FeesPendingView.vue"
+import ManagerGridView from "@/views/ManagerGridView.vue"
+import ProblemsView from "@/views/ProblemsView.vue"
 import StudentCountView from "@/views/StudentCountView.vue"
+import TargetView from "@/views/TargetView.vue"
 
 /** Each ready report's view exposes refresh() and exportCsv(). */
 interface ReportHandle {
@@ -17,10 +21,26 @@ interface ReportHandle {
 
 const VIEWS: Record<string, unknown> = {
 	student_count: StudentCountView,
+	fees_pending: FeesPendingView,
+	parent_complaint: ManagerGridView,
+	discontinued: ManagerGridView,
+	kpi_points: ManagerGridView,
+	staff_count: ManagerGridView,
+	work_mistakes: ManagerGridView,
+	critical_problems: ProblemsView,
+	single_sheet_problems: ProblemsView,
 	admin_enquiry: AdminView,
 	admin_total: AdminView,
 	admin_actual: AdminView,
 	admin_discontinued: AdminView,
+	am_weekly: TargetView,
+	am_monthly: TargetView,
+	am_ten_plus: TargetView,
+	tl_weekly: TargetView,
+	tl_monthly: TargetView,
+	tl_ten_plus: TargetView,
+	// Same STD x month count sheet as the Admin registers.
+	tl_discontinued: AdminView,
 }
 
 const route = useRoute()
@@ -36,7 +56,7 @@ const component = computed(() => (report.value.ready ? VIEWS[report.value.key] :
 const print = () => window.print()
 
 watchEffect(() => {
-	document.title = `${report.value.nav} · ${dashboard.value === "admin" ? "Admin" : "Manager"} Charts`
+	document.title = `${report.value.nav} · ${DASHBOARDS.find((d) => d.key === dashboard.value)?.title ?? ""}`
 })
 </script>
 

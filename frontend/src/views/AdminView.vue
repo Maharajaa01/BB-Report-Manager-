@@ -8,10 +8,12 @@ import type {
 	AdminDetailQuery,
 	AdminEnquiryReport,
 	AdminReport,
-	AdminSectionKey,
+	CountSectionKey,
 } from "@/api/types"
 import AdminCountSheet from "@/components/AdminCountSheet.vue"
+import AdminInsights from "@/components/AdminInsights.vue"
 import DetailDialog from "@/components/DetailDialog.vue"
+import EnquiryMonths from "@/components/EnquiryMonths.vue"
 import EnquirySheet from "@/components/EnquirySheet.vue"
 import EnquirySummary from "@/components/EnquirySummary.vue"
 import { type Cell, downloadCsv, slug } from "@/lib/csv"
@@ -25,7 +27,7 @@ const { filters, apiFilters, summary } = useFilters()
 const data = ref<AdminReport | null>(null)
 const error = ref("")
 const loading = ref(false)
-const tab = ref<AdminSectionKey | "all">("all")
+const tab = ref<CountSectionKey | "all">("all")
 let controller: AbortController | null = null
 
 const sent = computed(() => apiFilters(props.report))
@@ -51,7 +53,7 @@ watch(() => JSON.stringify(sent.value), load, { immediate: true })
 
 const enquiry = computed(() => (data.value?.report === "admin_enquiry" ? (data.value as AdminEnquiryReport) : null))
 const counts = computed(() => (data.value && data.value.report !== "admin_enquiry" ? (data.value as AdminCountReport) : null))
-const visible = (key: AdminSectionKey) => tab.value === "all" || tab.value === key
+const visible = (key: CountSectionKey) => tab.value === "all" || tab.value === key
 
 // ---------------------------------------------------------------- drill-down
 
@@ -113,11 +115,13 @@ defineExpose({ refresh: load, exportCsv })
 			<div class="bbr-summary-block">
 				<EnquirySummary :summary="enquiry.summary" />
 			</div>
+			<EnquiryMonths :data="enquiry" @open="detail = $event" />
 		</template>
 		<template v-else-if="counts">
 			<template v-for="s in counts.sections" :key="s.key">
 				<AdminCountSheet v-if="visible(s.key)" :report="report" :data="counts" :section="s" @open="detail = $event" />
 			</template>
+			<AdminInsights :data="counts" :gender="filters.gender" @open="detail = $event" />
 		</template>
 
 		<div v-if="!data.sections.length" class="bbr-state">No rows match these filters.</div>

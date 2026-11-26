@@ -26,6 +26,11 @@ REPORTS = {
 		"method": "bb_report_manager.api.tuition.get_student_count",
 		"detail": "bb_report_manager.api.tuition.get_student_count_detail",
 	},
+	"fees_pending": {
+		"source": TUITION,
+		"method": "bb_report_manager.api.tuition_fees.get_fees_pending",
+		"detail": "bb_report_manager.api.tuition_fees.get_fees_pending_detail",
+	},
 	# Admin dashboard ("Admin Wiro" registers)
 	**{
 		key: {
@@ -34,6 +39,40 @@ REPORTS = {
 			"detail": "bb_report_manager.api.tuition_admin.get_admin_detail",
 		}
 		for key in ("admin_enquiry", "admin_total", "admin_actual", "admin_discontinued")
+	},
+	# Asst. Manager Target Chart: posting staff mistakes (this site)
+	**{
+		key: {"source": ERP, "method": f"bb_report_manager.api.erp_targets.get_{key}"}
+		for key in ("am_weekly", "am_monthly", "am_ten_plus")
+	},
+	# TL Target Chart: 6th - 12th STD student mistakes
+	**{
+		key: {"source": TUITION, "method": f"bb_report_manager.api.tuition_targets.get_{key}"}
+		for key in ("tl_weekly", "tl_monthly", "tl_ten_plus")
+	},
+	# Manager Charts 3 - 9 ("Manager wiro" register)
+	**{
+		key: {
+			"source": TUITION,
+			"method": f"bb_report_manager.api.tuition_manager.get_{key}",
+			"detail": "bb_report_manager.api.tuition_manager.get_manager_detail",
+		}
+		for key in ("parent_complaint", "discontinued")
+	},
+	**{
+		key: {
+			"source": ERP,
+			"method": f"bb_report_manager.api.erp_manager.get_{key}",
+			"detail": "bb_report_manager.api.erp_manager.get_manager_detail",
+			# one detail endpoint serves several sheets: it needs to know which
+			"pass_report": True,
+		}
+		for key in ("kpi_points", "staff_count", "work_mistakes", "critical_problems", "single_sheet_problems")
+	},
+	"tl_discontinued": {
+		"source": TUITION,
+		"method": "bb_report_manager.api.tuition_targets.get_tl_discontinued",
+		"detail": "bb_report_manager.api.tuition_targets.get_tl_discontinued_detail",
 	},
 }
 
@@ -72,6 +111,7 @@ def get_report_detail(report, filters=None, row_key=None, month_key=None, kind=N
 			"kind": kind or "present",
 			"batch": batch,
 			"section": section,
+			"report": report if spec.get("pass_report") else None,
 		},
 	)
 

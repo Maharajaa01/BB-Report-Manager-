@@ -8,10 +8,10 @@ import BatchTable from "@/components/BatchTable.vue"
 import ChartSheet from "@/components/ChartSheet.vue"
 import DetailDialog from "@/components/DetailDialog.vue"
 import MovementTable from "@/components/MovementTable.vue"
-import StrengthChart from "@/components/StrengthChart.vue"
+import StackedChart from "@/components/StackedChart.vue"
 import SummaryTiles from "@/components/SummaryTiles.vue"
 import { downloadCsv, slug } from "@/lib/csv"
-import { date } from "@/lib/format"
+import { date, num } from "@/lib/format"
 import type { ReportDef } from "@/lib/reports"
 import { options, useFilters } from "@/lib/store"
 
@@ -65,7 +65,7 @@ const detailTitle = computed(() => {
 	const [std, gender] = (q.row || "").split("|")
 	const who = row ? row.label : std ? `${std}${gender ? ` - ${gender}` : ""}` : "All standards"
 	const batch = q.batch ? (q.batch === "__none__" ? "No batch" : `Batch ${q.batch}`) : null
-	return [DETAIL_TITLES[q.kind], who, batch, col ? `${col.month} ${col.year}` : "Whole period"].filter(Boolean).join(" · ")
+	return [DETAIL_TITLES[q.kind as DetailKind], who, batch, col ? `${col.month} ${col.year}` : "Whole period"].filter(Boolean).join(" · ")
 })
 
 const loadDetail = computed(() => {
@@ -77,6 +77,21 @@ const loadDetail = computed(() => {
 		rows: await getReportDetail(props.report.key, filters, q),
 	})
 })
+
+const strengthBars = computed(() =>
+	(data.value?.movement ?? []).map((m) => ({
+		key: m.key,
+		label: m.label,
+		short: m.short,
+		running: m.running,
+		lower: m.boys,
+		upper: m.girls,
+		extra: [
+			{ label: "Joined", value: num(m.joined + m.rejoined) },
+			{ label: "Left", value: num(m.discontinued) },
+		],
+	})),
+)
 
 const lastMonth = computed(() => {
 	const m = data.value?.movement ?? []
@@ -127,7 +142,13 @@ defineExpose({ refresh: load, exportCsv })
 		<ChartSheet :report="report" :data="data" @open="detail = $event" />
 		<SummaryTiles v-if="data.summary" :summary="data.summary" :last-month="lastMonth" @open="detail = $event" />
 		<div v-if="data.movement.length" class="bbr-grid-2">
-			<StrengthChart :movement="data.movement" @open="detail = $event" />
+			<StackedChart
+				title="Month-end strength"
+				:series="['Boys', 'Girls']"
+				:bars="strengthBars"
+				:note="data.movement.some((m) => m.running) ? '* running month, counted till today' : ''"
+				@open="detail = { kind: 'closing', month: $event }"
+			/>
 			<MovementTable :movement="data.movement" @open="detail = $event" />
 		</div>
 		<BatchTable

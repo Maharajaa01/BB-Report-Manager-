@@ -100,7 +100,7 @@ export type DetailKind = "present" | "opening" | "joined" | "rejoined" | "discon
 
 /** What a clicked number stands for; sent to get_report_detail. */
 export interface DetailQuery {
-	kind: DetailKind
+	kind: DetailKind | FeeKind
 	row?: string | null
 	month?: string | null
 	batch?: string | null
@@ -130,6 +130,8 @@ export interface StudentDetail {
 
 export type AdminMetric = "admin_enquiry" | "admin_total" | "admin_actual" | "admin_discontinued"
 export type AdminSectionKey = "junior" | "senior_boys" | "senior_girls"
+/** Count sheets also serve the TL "Discontinue Students" sheet, a single "tl" section. */
+export type CountSectionKey = AdminSectionKey | "tl"
 export type AdminKind = "enquiry" | "joined" | "total" | "actual" | "discontinued"
 
 export interface EJ {
@@ -158,7 +160,7 @@ export interface AdminEnquiryRow extends AdminRowBase {
 }
 
 export interface AdminCountSection {
-	key: AdminSectionKey
+	key: CountSectionKey
 	label: string
 	rows: AdminCountRow[]
 	totals: { values: Record<string, number | null>; highest: number | null; highest_month: string | null }
@@ -193,6 +195,10 @@ interface AdminReportBase {
 export interface AdminCountReport extends AdminReportBase {
 	report: "admin_total" | "admin_actual" | "admin_discontinued"
 	sections: AdminCountSection[]
+	/** Standard x batch: the latest month for strength sheets, every month so far for discontinued. */
+	batch_breakdown?: BatchBreakdown
+	/** Discontinued only: why students left, most common first. */
+	reasons?: { label: string; count: number }[]
 }
 
 export interface AdminEnquiryReport extends AdminReportBase {
@@ -207,7 +213,10 @@ export interface AdminDetailQuery {
 	kind: AdminKind
 	row?: string | null
 	month?: string | null
-	section?: AdminSectionKey | null
+	section?: CountSectionKey | null
+	/** Narrow the drill-down to one standard and/or batch ("__none__" = no batch). */
+	standard?: string | null
+	batch?: string | null
 	/** Shown in the dialog title. */
 	label: string
 }
@@ -229,4 +238,259 @@ export interface EnquiryDetail {
 	next_follow_up_date: string | null
 }
 
-export type DetailResult = { type: "student"; rows: StudentDetail[] } | { type: "enquiry"; rows: EnquiryDetail[] }
+export type DetailResult =
+	| { type: "table"; site: "tuition" | "erp"; columns: TableColumn[]; rows: Record<string, unknown>[]; link_key?: string | null }
+	| { type: "student"; rows: StudentDetail[] }
+	| { type: "enquiry"; rows: EnquiryDetail[] }
+	| { type: "fee"; rows: FeeDetail[] }
+
+// ------------------------------------------------------------------ Manager Report 2: fees pending after the 15th
+
+export interface FeeColumn extends MonthColumn {
+	/** ok = judged; future = its 15th has not passed; no_data = before invoices began */
+	state: "ok" | "future" | "no_data"
+}
+
+export interface FeeMonth {
+	key: string
+	label: string
+	short: string
+	due: number
+	on_time: number
+	pending: number
+	pending_pct: number | null
+	balance_on_cutoff: number
+	paid_late: number
+	still_pending: number
+	still_pending_amount: number
+}
+
+export interface FeesPendingReport {
+	report: "fees_pending"
+	title: string
+	academic_year: string
+	academic_year_label: string
+	generated_on: string
+	columns: FeeColumn[]
+	rows: GridRow[]
+	totals: { values: Record<string, number | null>; total: number }
+	monthly: FeeMonth[]
+	data_from: string | null
+	yearly_students: number
+	summary: {
+		month: string
+		pending: number
+		pending_prev: number | null
+		prev_label: string | null
+		due: number
+		pending_pct: number | null
+		balance_on_cutoff: number
+		still_pending: number
+		still_pending_amount: number
+		paid_late: number
+	} | null
+	batch_breakdown: BatchBreakdown | null
+}
+
+export type FeeKind = "pending" | "due" | "on_time" | "paid_late" | "still_pending"
+
+export interface FeeDetail extends StudentDetail {
+	fee_month: string
+	fee_month_key: string
+	fee: number | null
+	paid_by_cutoff: number | null
+	balance_on_cutoff: number | null
+	paid_late_on: string | null
+	still_pending: boolean
+	pending_today: number | null
+	on_time: boolean
+}
+
+// ------------------------------------------------------------------ Target Charts (Asst. Manager, TL)
+
+export interface TargetPerson {
+	id: string
+	name: string
+	/** "10th - II" for a student, "Designation - Department" for staff */
+	detail: string
+	count: number
+}
+
+export interface TargetCell {
+	total: number
+	/** Everyone with a mistake in the cell, most mistakes first; the first two are the "last 2 places". */
+	people: TargetPerson[]
+}
+
+export interface TargetRow {
+	key: string
+	label: string
+	idx: number
+	future?: boolean
+	cells: Record<string, TargetCell>
+}
+
+export interface TargetTable {
+	key: string
+	label: string
+	start?: string
+	end?: string
+	future?: boolean
+	rows: TargetRow[]
+	totals: Record<string, number>
+}
+
+export interface TargetInsights {
+	month_key: string
+	month_label: string
+	/** "STD - Batch" or "Department" */
+	group_head: string
+	summary: {
+		total: number
+		prev_total: number | null
+		prev_label: string | null
+		people: number
+		ten_plus: number
+		by_category: { key: string; label: string; count: number; prev: number | null }[]
+	}
+	trend: { key: string; label: string; short: string; running: boolean; by_category: Record<string, number>; total: number }[]
+	top: (TargetPerson & { by_category: Record<string, number> })[]
+	groups: { label: string; by_category: Record<string, number>; total: number; people: number }[]
+}
+
+interface TargetBase {
+	insights: TargetInsights
+	title: string
+	subtitle: string
+	academic_year: string
+	academic_year_label: string
+	generated_on: string
+	/** "November 2026" -- the month the sheet covers */
+	period: string
+}
+
+export interface TargetGridReport extends TargetBase {
+	report: "am_weekly" | "am_monthly" | "tl_weekly" | "tl_monthly"
+	row_head: string
+	categories: { key: string; label: string }[]
+	tables: TargetTable[]
+}
+
+export interface TenPlusReport extends TargetBase {
+	report: "am_ten_plus" | "tl_ten_plus"
+	sub_head: string
+	lists: { key: string; label: string; people: TargetPerson[] }[]
+}
+
+export type TargetReport = TargetGridReport | TenPlusReport
+
+// ------------------------------------------------------------------ Manager Charts 3 - 9 (generic shapes)
+
+/** A drill-down the dashboard sends back: which records sit behind a number. */
+export interface ManagerQuery {
+	kind: string
+	row?: string | null
+	month?: string | null
+	section?: string | null
+	batch?: string | null
+}
+
+export interface TableColumn {
+	key: string
+	label: string
+	num?: boolean
+	/** how the cell prints: date / datetime / link / check */
+	kind?: "date" | "datetime" | "link" | "check" | null
+}
+
+export interface TableBlock {
+	title: string
+	columns: TableColumn[]
+	rows: Record<string, unknown>[]
+	link_key?: string | null
+	empty?: string
+}
+
+export interface InsightTile {
+	label: string
+	value: number | string | null
+	fmt?: "points" | "pct" | null
+	sub: string
+	delta: number | null
+	delta_label: string
+	higher_is_good: boolean
+	open: ManagerQuery | null
+}
+
+export interface ManagerInsights {
+	tiles: InsightTile[]
+	chart: {
+		title: string
+		series: [string, string]
+		bars: { key: string; label: string; short: string; running: boolean; lower: number; upper: number }[]
+		note: string
+	}
+	bars: { title: string; rows: { label: string; count: number; key: string | null }[]; limit?: number }[]
+	tables: TableBlock[]
+}
+
+export interface SheetRow {
+	key: string
+	label: string
+	idx: number
+	values: Record<string, number | null>
+	total: number
+	/** Work list sheet: Daily / Weekly / Monthly behind each month's number. */
+	split?: Record<string, Record<string, number>>
+}
+
+export interface ManagerGridReport {
+	report: "parent_complaint" | "discontinued" | "kpi_points" | "staff_count" | "work_mistakes"
+	title: string
+	row_head?: string
+	academic_year: string
+	academic_year_label: string
+	generated_on: string
+	columns: MonthColumn[]
+	rows: SheetRow[]
+	totals: { values: Record<string, number | null>; total: number }
+	insights: ManagerInsights
+}
+
+export interface ProblemRow {
+	date: string
+	title: string
+	who: string | null
+	role: string | null
+	kind: string | null
+	status: string
+	solved: boolean
+	solved_at: string | null
+	assigned: string | null
+	source: string
+	priority: string | null
+	overdue: boolean
+	link: string
+}
+
+export interface CriticalProblemsReport {
+	report: "critical_problems"
+	title: string
+	academic_year_label: string
+	generated_on: string
+	columns: MonthColumn[]
+	items: Record<string, ProblemRow[]>
+	future: string[]
+	insights: ManagerInsights
+}
+
+export interface SingleSheetReport {
+	report: "single_sheet_problems"
+	title: string
+	academic_year_label: string
+	generated_on: string
+	period: string
+	month_key: string
+	rows: ProblemRow[]
+	insights: ManagerInsights
+}

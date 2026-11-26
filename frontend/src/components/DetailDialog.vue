@@ -7,9 +7,11 @@
  */
 import { computed, ref, watch } from "vue"
 
-import type { DetailResult, EnquiryDetail, StudentDetail } from "@/api/types"
+import type { DetailResult, EnquiryDetail, FeeDetail, StudentDetail } from "@/api/types"
 import { downloadCsv, slug } from "@/lib/csv"
-import { date } from "@/lib/format"
+import { cellText } from "@/lib/cells"
+import { date, rupees } from "@/lib/format"
+import DataTable from "@/components/DataTable.vue"
 
 const props = defineProps<{
 	load: (() => Promise<DetailResult>) | null
@@ -67,10 +69,34 @@ const enquiries = computed<EnquiryDetail[]>(() => {
 	)
 })
 
-const shownCount = computed(() => (result.value?.type === "enquiry" ? enquiries.value.length : students.value.length))
+const fees = computed<FeeDetail[]>(() => {
+	if (result.value?.type !== "fee") return []
+	const q = search.value.trim().toLowerCase()
+	return result.value.rows.filter((s) => matches(q, [s.student, s.student_name, s.father_name, s.mobile, s.school, s.area]))
+})
+
+/** Generic records (complaints, staff, problems ...): searched across every printed column. */
+const tableRows = computed<Record<string, unknown>[]>(() => {
+	if (result.value?.type !== "table") return []
+	const q = search.value.trim().toLowerCase()
+	const cols = result.value.columns
+	return result.value.rows.filter((r) => matches(q, cols.map((c) => cellText(r[c.key], c))))
+})
+const tableLinkBase = computed(() => (result.value?.type === "table" && result.value.site === "tuition" ? props.tuitionUrl : ""))
+
+const shownCount = computed(() =>
+	result.value?.type === "table"
+		? tableRows.value.length
+		: result.value?.type === "enquiry"
+		? enquiries.value.length
+		: result.value?.type === "fee"
+			? fees.value.length
+			: students.value.length,
+)
 const totalCount = computed(() => result.value?.rows.length ?? 0)
-const noun = computed(() => (result.value?.type === "enquiry" ? "enquir" : "student"))
-const plural = (n: number) => (noun.value === "enquir" ? (n === 1 ? "enquiry" : "enquiries") : n === 1 ? "student" : "students")
+const noun = computed(() => (result.value?.type === "enquiry" ? "enquir" : result.value?.type === "table" ? "record" : "student"))
+const plural = (n: number) =>
+	noun.value === "enquir" ? (n === 1 ? "enquiry" : "enquiries") : `${noun.value}${n === 1 ? "" : "s"}`
 
 const link = (doctype: string, name: string) => `${props.tuitionUrl}/app/${doctype}/${encodeURIComponent(name)}`
 // A rejoined student is Active again but still carries the date they left.
@@ -78,6 +104,22 @@ const hasLeft = (s: StudentDetail) => s.status !== "Active" || !!s.rejoined_date
 
 function exportCsv() {
 	const head = [[props.title], [props.filterSummary], []]
+	if (result.value?.type === "table") {
+		const cols = result.value.columns
+		downloadCsv(slug(props.title), [...head, cols.map((c) => c.label), ...tableRows.value.map((r) => cols.map((c) => cellText(r[c.key], c)))])
+		return
+	}
+	if (result.value?.type === "fee") {
+		downloadCsv(slug(props.title), [
+			...head,
+			["Admission No", "Student", "Father", "Standard", "Batch", "Gender", "Fee month", "Fee", "Paid by 15th",
+				"Owed on 15th", "Paid later on", "Still unpaid", "Unpaid today", "Status", "Parent mobile", "School"],
+			...fees.value.map((s) => [s.student, s.student_name, s.father_name, s.standard, s.batch, s.gender, s.fee_month,
+				s.fee, s.paid_by_cutoff, s.balance_on_cutoff, date(s.paid_late_on), s.on_time ? "" : s.still_pending ? "Yes" : "No",
+				s.still_pending ? s.pending_today : "", s.status, s.mobile, s.school]),
+		])
+		return
+	}
 	if (result.value?.type === "enquiry") {
 		downloadCsv(slug(props.title), [
 			...head,
@@ -110,12 +152,20 @@ function exportCsv() {
 			<div v-else-if="error" class="bbr-state error">{{ error }}</div>
 			<template v-else-if="result">
 				<div class="bbr-detail-tools">
-					<input v-model="search" type="search" placeholder="Search name, number, mobile, school…" />
+					<input v-model="search" type="search" :placeholder="result.type === 'table' ? 'Search…' : 'Search name, number, mobile, school…'" />
 					<span class="bbr-detail-count">{{ shownCount }} of {{ totalCount }} {{ plural(totalCount) }}</span>
 					<button type="button" class="bbr-btn secondary" @click="exportCsv">Export to Excel</button>
 				</div>
 
-				<div class="bbr-table-scroll">
+				<DataTable
+					v-if="result.type === 'table'"
+					:columns="result.columns"
+					:rows="tableRows"
+					:link-key="result.link_key"
+					:link-base="tableLinkBase"
+					numbered
+				/>
+				<div v-else class="bbr-table-scroll">
 					<table v-if="result.type === 'enquiry'" class="bbr-table bbr-list">
 						<thead>
 							<tr>
@@ -155,6 +205,44 @@ function exportCsv() {
 								</td>
 							</tr>
 							<tr v-if="!enquiries.length"><td colspan="10" class="bbr-empty">No enquiries</td></tr>
+						</tbody>
+					</table>
+
+					<table v-else-if="result.type === 'fee'" class="bbr-table bbr-list">
+						<thead>
+							<tr>
+								<th>#</th><th>Adm. No</th><th>Student</th><th>Std / Batch</th><th>Fee month</th>
+								<th class="num">Fee</th><th class="num">Paid by 15th</th><th class="num">Owed on 15th</th>
+								<th>Since then</th><th>Parent mobile</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr v-for="(s, i) in fees" :key="`${s.student}-${s.fee_month_key}`">
+								<td>{{ i + 1 }}</td>
+								<td class="nowrap"><a :href="link('student', s.student)" target="_blank" rel="noopener">{{ s.student }}</a></td>
+								<td>
+									<b>{{ s.student_name }}</b>
+									<template v-if="s.father_name"><br /><small>F: {{ s.father_name }}</small></template>
+									<span v-if="s.status !== 'Active'" class="bbr-tag left">{{ s.status }}</span>
+								</td>
+								<td>{{ s.standard }}<br /><small>{{ s.gender }}{{ s.batch ? ` · Batch ${s.batch}` : "" }}</small></td>
+								<td class="nowrap">{{ s.fee_month }}</td>
+								<template v-if="s.on_time">
+									<td class="num" colspan="3"><span class="bbr-tag joined">Paid by the 15th</span></td>
+									<td></td>
+								</template>
+								<template v-else>
+									<td class="num">{{ rupees(s.fee) }}</td>
+									<td class="num">{{ rupees(s.paid_by_cutoff) }}</td>
+									<td class="num strong">{{ rupees(s.balance_on_cutoff) }}</td>
+									<td>
+										<span v-if="s.still_pending" class="bbr-tag left">Unpaid · {{ rupees(s.pending_today) }}</span>
+										<span v-else class="bbr-tag enq-follow-up">Paid {{ date(s.paid_late_on) }}</span>
+									</td>
+								</template>
+								<td><a v-if="s.mobile" :href="`tel:${s.mobile}`">{{ s.mobile }}</a></td>
+							</tr>
+							<tr v-if="!fees.length"><td colspan="10" class="bbr-empty">No students</td></tr>
 						</tbody>
 					</table>
 

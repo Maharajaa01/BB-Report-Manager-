@@ -355,6 +355,69 @@ class AdminReport:
 		}
 
 
+NO_BATCH = "__none__"
+
+
+def month_label(month, today):
+	return f"{month['month']} {month['year']}" + (" (till today)" if month["end"] > today else "")
+
+
+def period_label(months, today):
+	"""'April - November 2026' for a run of months (empty key = the whole period in drill-downs)."""
+	first, last = months[0], months[-1]
+	return month_label(first, today) if first is last else f"{first['month']} {first['year']} - {month_label(last, today)}"
+
+
+def batch_breakdown(members, standards, month_key, label, batch_filter=None):
+	"""Standard x current batch for a set of students (BatchBreakdown on the dashboard).
+	month_key "" means the whole period when a cell is opened."""
+	batches = frappe.get_all("Batch", filters={"is_active": 1}, order_by="display_order asc, name asc", pluck="name")
+	if batch_filter:
+		batches = [b for b in batches if b in _as_list(batch_filter)]
+	rows = []
+	for std in standards:
+		mine = [s for s in members if s.standard == std]
+		if not mine:
+			continue
+		rows.append(
+			{
+				"standard": std,
+				"values": {b: sum(1 for s in mine if s.current_batch == b) for b in batches},
+				"no_batch": sum(1 for s in mine if s.current_batch not in batches),
+				"boys": sum(1 for s in mine if s.gender == "Boys"),
+				"girls": sum(1 for s in mine if s.gender == "Girls"),
+				"total": len(mine),
+			}
+		)
+	return {
+		"month_key": month_key,
+		"label": label,
+		"batches": batches,
+		"rows": rows,
+		"totals": {
+			"values": {b: sum(r["values"][b] for r in rows) for b in batches},
+			"no_batch": sum(r["no_batch"] for r in rows),
+			"boys": sum(r["boys"] for r in rows),
+			"girls": sum(r["girls"] for r in rows),
+			"total": sum(r["total"] for r in rows),
+		},
+	}
+
+
+def leaving_reasons(students):
+	"""Why students left: [{label, count}], most common first."""
+	counts = Counter((s.discontinue_reason_category or s.discontinued_reason or "Not recorded").strip() for s in students)
+	return [{"label": k, "count": n} for k, n in sorted(counts.items(), key=lambda kv: (-kv[1], kv[0]))]
+
+
+def in_batch(student, batch):
+	if not batch:
+		return True
+	if batch == NO_BATCH:
+		return not student.current_batch
+	return student.current_batch == batch
+
+
 def _highest(values):
 	"""Peak month of a row: {'highest': n, 'highest_month': 'YYYY-MM'} (earliest month on a tie)."""
 	best_key, best = None, None
@@ -389,6 +452,23 @@ def _report(filters, metric):
 	}
 	if metric == "admin_enquiry":
 		out["summary"] = report.enquiry_summary(sections)
+	elif report.elapsed:
+		kind = metric.removeprefix("admin_")
+		standards = [std.name for std in report.layout.standards]
+		if kind == "discontinued":
+			# Few leave in any one month: the detail covers every month so far.
+			left = {s.name: s for m in report.elapsed for s in report.members(kind, m) if report.student_key(s)}
+			out["batch_breakdown"] = batch_breakdown(
+				list(left.values()), standards, "", period_label(report.elapsed, report.today), report.filters.batch
+			)
+			out["reasons"] = leaving_reasons(left.values())
+		else:
+			# Strength: the picked month, else the latest one started.
+			month = report.elapsed[-1]
+			members = [s for s in report.members(kind, month) if report.student_key(s)]
+			out["batch_breakdown"] = batch_breakdown(
+				members, standards, month["key"], month_label(month, report.today), report.filters.batch
+			)
 	return out
 
 
@@ -443,6 +523,8 @@ def get_admin_detail(filters=None, row_key=None, month_key=None, kind="actual", 
 				std = report.layout.by_name.get(std_name)
 				if not std or _section_for(std, gender) != section:
 					continue
+			if kind != "enquiry" and not in_batch(r, batch):
+				continue
 			picked[r.name] = r
 
 	if kind == "enquiry":

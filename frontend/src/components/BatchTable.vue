@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { computed } from "vue"
 
-import type { BatchBreakdown, DetailQuery } from "@/api/types"
+import type { BatchBreakdown, DetailKind, DetailQuery, FeeKind } from "@/api/types"
 import { num } from "@/lib/format"
 
-const props = defineProps<{ data: BatchBreakdown; gender: string }>()
+const props = withDefaults(
+	defineProps<{ data: BatchBreakdown; gender: string; kind?: DetailKind | FeeKind; title?: string }>(),
+	{ kind: "closing", title: "Standard × batch strength" },
+)
 const emit = defineEmits<{ open: [q: DetailQuery] }>()
 
 const showNone = computed(() => props.data.totals.no_batch > 0)
@@ -12,7 +15,7 @@ const showNone = computed(() => props.data.totals.no_batch > 0)
 function open(v: number, standard: string | null, batch: string | null) {
 	if (!v) return
 	emit("open", {
-		kind: "closing",
+		kind: props.kind,
 		month: props.data.month_key,
 		row: standard ? `${standard}|${props.gender}` : null,
 		batch,
@@ -22,7 +25,7 @@ function open(v: number, standard: string | null, batch: string | null) {
 
 <template>
 	<section class="bbr-card">
-		<div class="bbr-card-head"><h2>Standard × batch strength · {{ data.label }}</h2></div>
+		<div class="bbr-card-head"><h2>{{ title }} · {{ data.label }}</h2></div>
 		<div class="bbr-table-scroll">
 			<table class="bbr-table">
 				<thead>

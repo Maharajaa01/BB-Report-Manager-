@@ -1,0 +1,203 @@
+{
+ "charts": [],
+ "content": "[{\"id\": \"hdr_main\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>BB Academy Report Dashboard</b></span>\", \"col\": 12}}, {\"id\": \"sc_open\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Open Report Dashboard\", \"col\": 3}}, {\"id\": \"sp_0\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"hdr_manager\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Manager Charts</b></span>\", \"col\": 12}}, {\"id\": \"sc_student_count\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Actual Students Count\", \"col\": 3}}, {\"id\": \"sc_fees_pending\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Fees Pending After 15th\", \"col\": 3}}, {\"id\": \"sc_parent_complaint\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Parents Complaint\", \"col\": 3}}, {\"id\": \"sc_discontinued\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Discontinued Students\", \"col\": 3}}, {\"id\": \"sc_kpi_points\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"KPI Points - Posting Staff\", \"col\": 3}}, {\"id\": \"sc_staff_count\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Staff's Count\", \"col\": 3}}, {\"id\": \"sc_work_mistakes\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Work List Mistakes\", \"col\": 3}}, {\"id\": \"sc_critical_problems\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Critical Problems\", \"col\": 3}}, {\"id\": \"sc_single_sheet_problems\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Single Sheet Problems\", \"col\": 3}}, {\"id\": \"sp_manager\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"hdr_admin\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Admin Charts</b></span>\", \"col\": 12}}, {\"id\": \"sc_admin_enquiry\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Admin: Enquiry & Joiners Count\", \"col\": 3}}, {\"id\": \"sc_admin_total\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Admin: Total Students Count\", \"col\": 3}}, {\"id\": \"sc_admin_actual\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Admin: Actual Students Count\", \"col\": 3}}, {\"id\": \"sc_admin_discontinued\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Admin: Discontinued Students\", \"col\": 3}}, {\"id\": \"sp_admin\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"hdr_asst_manager\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>Asst. Manager Target Chart</b></span>\", \"col\": 12}}, {\"id\": \"sc_am_weekly\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Asst. Manager: Weekly Report\", \"col\": 3}}, {\"id\": \"sc_am_monthly\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Asst. Manager: Monthly Report\", \"col\": 3}}, {\"id\": \"sc_am_ten_plus\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"Asst. Manager: 10+ Mistake\", \"col\": 3}}, {\"id\": \"sp_asst_manager\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"hdr_tl\", \"type\": \"header\", \"data\": {\"text\": \"<span class=\\\"h4\\\"><b>TL Target Chart</b></span>\", \"col\": 12}}, {\"id\": \"sc_tl_weekly\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"TL: Weekly Report\", \"col\": 3}}, {\"id\": \"sc_tl_monthly\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"TL: Monthly Report\", \"col\": 3}}, {\"id\": \"sc_tl_ten_plus\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"TL: 10+ Mistake\", \"col\": 3}}, {\"id\": \"sc_tl_discontinued\", \"type\": \"shortcut\", \"data\": {\"shortcut_name\": \"TL: Discontinue Students\", \"col\": 3}}, {\"id\": \"sp_tl\", \"type\": \"spacer\", \"data\": {\"col\": 12}}, {\"id\": \"card_settings\", \"type\": \"card\", \"data\": {\"card_name\": \"Setup\", \"col\": 4}}]",
+ "creation": "2026-11-25 20:00:00.000000",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "chart",
+ "idx": 0,
+ "indicator_color": "",
+ "is_hidden": 0,
+ "label": "BB Reports",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Setup",
+   "link_count": 1,
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "BB Report Settings",
+   "link_count": 0,
+   "link_to": "BB Report Settings",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2026-11-25 20:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Bb Report Manager",
+ "name": "BB Reports",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "BB Report Viewer"
+  },
+  {
+   "role": "System Manager"
+  }
+ ],
+ "sequence_id": 0.4,
+ "shortcuts": [
+  {
+   "type": "URL",
+   "label": "Open Report Dashboard",
+   "url": "/bb-reports",
+   "color": "Grey",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "Actual Students Count",
+   "url": "/bb-reports/student-count",
+   "color": "Blue",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "Fees Pending After 15th",
+   "url": "/bb-reports/fees-pending",
+   "color": "Blue",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "Parents Complaint",
+   "url": "/bb-reports/parents-complaint",
+   "color": "Blue",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "Discontinued Students",
+   "url": "/bb-reports/discontinued",
+   "color": "Blue",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "KPI Points - Posting Staff",
+   "url": "/bb-reports/kpi-points",
+   "color": "Blue",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "Staff's Count",
+   "url": "/bb-reports/staff-count",
+   "color": "Blue",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "Work List Mistakes",
+   "url": "/bb-reports/work-mistakes",
+   "color": "Blue",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "Critical Problems",
+   "url": "/bb-reports/critical-problems",
+   "color": "Blue",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "Single Sheet Problems",
+   "url": "/bb-reports/single-sheet-problems",
+   "color": "Blue",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "Admin: Enquiry & Joiners Count",
+   "url": "/bb-reports/admin/enquiry-joiners",
+   "color": "Green",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "Admin: Total Students Count",
+   "url": "/bb-reports/admin/total-students",
+   "color": "Green",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "Admin: Actual Students Count",
+   "url": "/bb-reports/admin/actual-students",
+   "color": "Green",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "Admin: Discontinued Students",
+   "url": "/bb-reports/admin/discontinued",
+   "color": "Green",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "Asst. Manager: Weekly Report",
+   "url": "/bb-reports/asst-manager/weekly",
+   "color": "Orange",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "Asst. Manager: Monthly Report",
+   "url": "/bb-reports/asst-manager/monthly",
+   "color": "Orange",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "Asst. Manager: 10+ Mistake",
+   "url": "/bb-reports/asst-manager/ten-plus",
+   "color": "Orange",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "TL: Weekly Report",
+   "url": "/bb-reports/tl/weekly?gender=Girls",
+   "color": "Purple",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "TL: Monthly Report",
+   "url": "/bb-reports/tl/monthly?gender=Girls",
+   "color": "Purple",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "TL: 10+ Mistake",
+   "url": "/bb-reports/tl/ten-plus?gender=Girls",
+   "color": "Purple",
+   "doc_view": ""
+  },
+  {
+   "type": "URL",
+   "label": "TL: Discontinue Students",
+   "url": "/bb-reports/tl/discontinued?gender=Girls",
+   "color": "Purple",
+   "doc_view": ""
+  }
+ ],
+ "title": "BB Reports"
+}
